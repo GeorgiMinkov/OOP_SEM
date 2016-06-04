@@ -271,24 +271,28 @@ std::ostream &operator<<(std::ostream &out, const Dictionary<K, V> &source)
 }
 
 template<class T>
-class type_name {
+class type_name 
+{
 public:
 	static std::string get() { return typeid(T).name(); }
 };
 template<>
-class type_name<std::string> {
+class type_name<std::string> 
+{
 public:
 	static std::string get() { return "string"; }
 };
 
 template<>
-class type_name<const char *> {
+class type_name<const char *>
+{
 public:
 	static std::string get() { return "string"; }
 };
 
 template<int N>
-class type_name<const char[N]> {
+class type_name<const char[N]> 
+{
 public:
 	static std::string get() { return "string"; }
 };
