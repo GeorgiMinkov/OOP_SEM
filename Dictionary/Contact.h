@@ -1,27 +1,28 @@
 #pragma once
-#include<cstring>
+#include<iostream>
+#include<string>
+#include<cmath>
 
 class Contact
 {
-	char *name;
-	char number[11];
-	char *id;
+	std::string name;
+	std::string telNumber;
+	std::string ID;
 
-	void copyString(char *& destination, char *source);
-	void copyElements(const Contact &other);
-
+	void copyObject(const Contact &other);
+	void checkAndCorrectTelNumber();
 public:
-	Contact();
-	Contact(char *name, char number[11], char *id);
+	Contact(std::string name = "", std::string telNumber = "", std::string ID = "");
 	Contact(const Contact &other);
 	Contact &operator=(const Contact &other);
-	~Contact();
+	
+	void setName(std::string name);
+	void setTelNumber(std::string telNumber);
+	void setID(std::string ID);
 
-	void setName(char *name);
-	void setNumber(const char number[11]);
-	void setID(char *id);
+	std::string getName() const;
+	std::string getTelNumber() const;
+	std::string getID() const;
 
-	char * getName() const;
-	char * getNumber() const;
-	char * getID() const;
+	friend std::ostream &operator<<(std::ostream &out, const Contact &source);
 };

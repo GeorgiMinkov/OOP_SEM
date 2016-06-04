@@ -1,43 +1,36 @@
-#include "stdafx.h"
-#include "Contact.h"
+#include"stdafx.h"
+#include"Contact.h"
 
-void Contact::copyString(char *& destination, char * source)
+void Contact::copyObject(const Contact &other)
 {
-	destination = new char[strlen(source) + 1];
+	this->name = other.name;
+	this->ID = other.ID;
+	this->telNumber = other.telNumber;
 
-	strcpy_s(destination, strlen(source) + 1, source);
+	this->checkAndCorrectTelNumber();
 }
 
-void Contact::copyElements(const Contact & other)
+void Contact::checkAndCorrectTelNumber()
 {
-	this->copyString(this->name, other.name);
-
-	strcpy_s(this->number, other.number);
-
-	this->copyString(this->id, other.id);
+	if (this->telNumber.length() > 10)
+	{
+		std::cout << "Telephone number will be resize to 10 symbols\n";
+		this->telNumber.resize(10);
+	}
 }
 
-Contact::Contact()
+Contact::Contact(std::string name, std::string telNumber, std::string ID)
 {
-	this->name = nullptr;
+	this->name = name;
+	this->ID = ID;
+	this->telNumber = telNumber;
 
-	strcpy_s(this->number, "");
-
-	this->id = nullptr;
-}
-
-Contact::Contact(char * name, char number[11], char * id)
-{
-	this->copyString(this->name, name);
-
-	strcpy_s(this->number, number);
-
-	this->copyString(this->id, id);
+	this->checkAndCorrectTelNumber();
 }
 
 Contact::Contact(const Contact & other)
 {
-	this->copyElements(other);
+	this->copyObject(other);
 }
 
 Contact & Contact::operator=(const Contact & other)
@@ -45,55 +38,46 @@ Contact & Contact::operator=(const Contact & other)
 	// TODO: =
 	if (this != &other)
 	{
-		if (this->name != nullptr) delete[] this->name;
-		if (this->id != nullptr) delete[] this->id;
-
-		copyElements(other);
+		this->copyObject(other);
 	}
 
 	return *this;
 }
 
-Contact::~Contact()
+void Contact::setName(std::string name)
 {
-	delete[] this->name;
-
-	delete[] this->id;
+	this->name = name;
 }
 
-void Contact::setName(char * name)
+void Contact::setTelNumber(std::string telNumber)
 {
-	if (this->name != nullptr) delete[] this->name;
-	
-	this->copyString(this->name, name);
+	this->telNumber = telNumber;
 }
 
-void Contact::setNumber(const char number[11])
+void Contact::setID(std::string ID)
 {
-	strcpy_s(this->number, number);
+	this->ID = ID;
 }
 
-void Contact::setID(char * id)
-{
-	if (this->id != nullptr) delete[] this->id;
-
-	this->copyString(this->id, id);
-}
-
-char * Contact::getName() const
+std::string Contact::getName() const
 {
 	return this->name;
 }
 
-char * Contact::getNumber() const
+std::string Contact::getTelNumber() const
 {
-	char *number = new char[11];
-	strcpy_s(number, 11, this->number);
-
-	return number;
+	return this->telNumber;
 }
 
-char * Contact::getID() const
+std::string Contact::getID() const
 {
-	return this->id;
+	return this->ID;
+}
+
+std::ostream & operator<<(std::ostream & out, const Contact & source)
+{
+	// TODO: <<
+	out << source.name << " " << source.telNumber << " " << source.ID;
+
+	return out;
 }

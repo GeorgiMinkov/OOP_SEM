@@ -4,153 +4,167 @@
 template<class K, class V>
 class Dictionary
 {
-	K *key;
-	V *value;
+	K *keys;
+	V *values;
 
 	int currentSize;
 	int capacity;
 
 	void resize();
+	void copyElemets(K *keys, V *values, int currentSize, int capacity);
+	void copyObjet(const Dictionary &other);
 	void destroy();
 
-	void copy(const Dictionary &other);
+	void sort();
 
-	bool isEmty() const;
+	bool isEmpty() const;
 	bool isFull() const;
-	void noElementMessage(const K &keyElement) const;
-
 public:
 	Dictionary();
-	Dictionary(K *key, V *value, int currentSize, int capacity);
+	Dictionary(K *keys, V *values, int currentSize, int capacity);
 	Dictionary(const Dictionary &other);
-	
 	Dictionary &operator=(const Dictionary &other);
 	virtual ~Dictionary();
 
+	V searchByKey(const K &searchKey) const;
 	void addNewElement(const K &newKey, const V &newValue);
-	
-	V searchByKey(const K &keySearch) const;
 
-	
-	friend std::ostream &operator<<(std::ostream &out, const Dictionary &source)
-	{
-		Dictionary<K, V> tmpObject(source);
-
-		for (size_t i = 0; i < tmpObject.currentSize; i++)
-				out << "Key: " << tmpObject.key[i] << " Value : " << tmpObject.value[i] << std::endl;
-
-		return out;
-	}
+	template<class KK, class VV>
+	friend std::ostream &operator<<(std::ostream &out, const Dictionary<KK, VV> &source);
 };
 
 template<class K, class V>
 inline void Dictionary<K, V>::resize()
 {
-	K *bufferKey = new K[this->capacity * 1.5];
+	if (this->capacity == 0) this->capacity = 1;
 
-	V *bufferValue = new V[this->capacity * 1.5];
+	int GAP = ceil(this->capacity * 1.7);
 
-	for (size_t i = 0; i < this->capacity; i++)
-	{
-		bufferKey[i] = this->key[i];
-
-		bufferValue[i] = this->value[i];
-	}
-
-	this->capacity = this->capacity * 1.5;
-}
-
-template<class K, class V>
-inline void Dictionary<K, V>::copy(const Dictionary & other)
-{
-	this->currentSize = other.currentSize;
-
-	this->capacity = other.capacity;
-
-	this->key = new K[this->capacity];
-
-	this->value = new V[this->capacity];
+	K *keyBuffer = new K[GAP];
+	V *valueBuffer = new V[GAP];
 
 	for (size_t i = 0; i < this->currentSize; i++)
 	{
-		this->key[i] = other.key[i];
+		keyBuffer[i] = this->keys[i];
 
-		this->value[i] = other.value[i];
+		valueBuffer[i] = this->values[i];
+	}
+
+	this->destroy();
+
+	this->keys = keyBuffer;
+	this->values = valueBuffer;
+
+	this->capacity = GAP;
+}
+
+template<class K, class V>
+inline void Dictionary<K, V>::copyElemets(K * keys, V * values, int currentSize, int capacity)
+{
+	this->keys = new K[capacity];
+	this->values = new V[capacity];
+
+	this->currentSize = currentSize;
+	this->capacity = capacity;
+
+	for (size_t i = 0; i < currentSize; i++)
+	{
+		this->keys[i] = keys[i];
+		
+		this->values[i] = values[i];
+	}
+}
+
+template<class K, class V>
+inline void Dictionary<K, V>::copyObjet(const Dictionary & other)
+{
+	this->capacity = other.capacity;
+	this->currentSize = other.currentSize;
+
+	this->keys = new K[this->capacity];
+	this->values = new V[this->capacity];
+
+	for (size_t i = 0; i < this->currentSize; i++)
+	{
+		this->keys[i] = other.keys[i];
+
+		this->values[i] = other.values[i];
 	}
 }
 
 template<class K, class V>
 inline void Dictionary<K, V>::destroy()
 {
-	if (this->key != nullptr) delete[] this->key;
-
-	if (this->value != nullptr) delete[] this->value;
+	if (this->keys != nullptr) delete[] this->keys;
+	if (this->values != nullptr) delete[] this->values;
 }
 
 template<class K, class V>
-inline bool Dictionary<K, V>::isEmty() const
+inline void Dictionary<K, V>::sort()
 {
-	return this->capacity <= 0;
+	if (this->currentSize == 0) return;
+
+	for (size_t i = 0; i < this->currentSize - 1; i++)
+	{
+		for (size_t j = 0; j < this->currentSize - i - 1; j++)
+		{
+			if (this->keys[j] > this->keys[j + 1])
+			{
+				K tmpKey = this->keys[j];
+				V tmpValue = this->values[j];
+
+				this->keys[j] = this->keys[j + 1];
+				this->keys[j + 1] = tmpKey;
+
+				this->values[j] = this->values[j + 1];
+				this->values[j + 1] = tmpValue;
+			}
+		}
+	}
+}
+
+template<class K, class V>
+inline bool Dictionary<K, V>::isEmpty() const
+{
+	return this->currentSize == 0;
 }
 
 template<class K, class V>
 inline bool Dictionary<K, V>::isFull() const
 {
-	return this->capacity == this->currentSize;
-}
-
-template<class K, class V>
-inline void Dictionary<K, V>::noElementMessage(const K & keyElement) const
-{
-	std::cout << "No element with key: " << keyElement << std::endl;
+	return this->currentSize == this->capacity;
 }
 
 template<class K, class V>
 inline Dictionary<K, V>::Dictionary()
 {
-	this->key = nullptr;
-
-	this->value = nullptr;
-
-	this->currentSize = -1;
-
-	this->capacity = -1;
+	this->keys = nullptr;
+	this->values = nullptr;
+	this->currentSize = 0;
+	this->capacity = 0;
 }
 
 template<class K, class V>
-inline Dictionary<K, V>::Dictionary(K * key, V * value, int currentSize, int capacity)
+inline Dictionary<K, V>::Dictionary(K * keys, V * values, int currentSize, int capacity)
 {
-	this->currentSize = currentSize;
-
-	this->capacity = capacity;
-
-	this->key = new K[capacity];
-
-	this->value = new V[capacity];
-
-	for (size_t i = 0; i < currentSize; i++)
-	{
-		this->key[i] = key[i];
-
-		this->value[i] = value[i];
-	}
+	this->copyElemets(keys, values, currentSize, capacity);
 }
 
 template<class K, class V>
 inline Dictionary<K, V>::Dictionary(const Dictionary & other)
 {
-	this->copy(other);
+	this->copyObjet(other);
 }
 
 template<class K, class V>
-inline Dictionary<K, V> & Dictionary<K, V>::operator=(const Dictionary & other)
+inline Dictionary<K,V> & Dictionary<K, V>::operator=(const Dictionary & other)
 {
-	// TODO: insert return statement here
+	// TODO: =
 	if (this != &other)
 	{
 		this->destroy();
 
-		this->copy(other);
+		this->copyObject(other);
 	}
 
 	return *this;
@@ -159,9 +173,27 @@ inline Dictionary<K, V> & Dictionary<K, V>::operator=(const Dictionary & other)
 template<class K, class V>
 inline Dictionary<K, V>::~Dictionary()
 {
-	delete[] this->key;
+	delete[] this->keys;
+	delete[] this->values;
+}
 
-	delete[] this->value;
+template<class K, class V>
+inline V Dictionary<K, V>::searchByKey(const K & searchKey) const
+{
+	if (!(this->isEmpty()))
+	{
+		for (size_t i = 0; i < this->currentSize; i++)
+		{
+			if (this->keys[i] == searchKey)
+			{
+				return this->values[i];
+			}
+		}
+	}
+
+	std::cout << "No element with key: " << searchKey << " was founded\nWill return empty value\n";
+
+	return V();
 }
 
 template<class K, class V>
@@ -171,37 +203,29 @@ inline void Dictionary<K, V>::addNewElement(const K & newKey, const V & newValue
 	{
 		this->resize();
 
-		this->key[this->currentSize] = newKey;
-
-		this->value[this->currentSize] = newValue;
+		this->keys[this->currentSize] = newKey;
+		this->values[this->currentSize] = newValue;
 
 		this->currentSize++;
 	}
 	else
 	{
-		this->key[this->currentSize] = newKey;
-
-		this->value[this->currentSize] = newValue;
+		this->keys[this->currentSize] = newKey;
+		this->values[this->currentSize] = newValue;
 
 		this->currentSize++;
-
 	}
 }
 
 template<class K, class V>
-inline V Dictionary<K, V>::searchByKey(const K & keySearch) const
+std::ostream &operator<<(std::ostream &out, const Dictionary<K, V> &source)
 {
-	bool checkCondition = false;
+	Dictionary<K, V> tmp(source);
 
-	for (size_t i = 0; i < this->currentSize; i++)
-	{
-		if (this->key[i] == keySearch)
-		{
-			return this->value[i];
-		}
-	}
+	tmp.sort();
 
-	this->noElementMessage();
-
-	return V();
+	for (size_t i = 0; i < tmp.currentSize; i++)
+		out << "Key: " << tmp.keys[i] << " Value: " << tmp.values[i] << "\n";
+		
+	return out;
 }
