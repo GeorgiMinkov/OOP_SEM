@@ -22,13 +22,13 @@ class ContactBook
 
 	bool isFull() const;
 public:
-	// 4-tworkata
 	ContactBook();
 	ContactBook(Contact *contacts, int currentSize, int capacity);
 	ContactBook(const ContactBook &other);
 	~ContactBook();
 
 	void addContact(const Contact &other);
+
 	const Contact findContactByName(std::string name) const;
 	const Contact findContactByTelNumber(std::string telNumber) const;
 	const Contact findContactByID(std::string ID) const;

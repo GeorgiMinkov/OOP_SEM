@@ -24,10 +24,11 @@ public:
 	Dictionary(K *keys, V *values, int currentSize, int capacity);
 	Dictionary(const Dictionary &other);
 	Dictionary &operator=(const Dictionary &other);
-	virtual ~Dictionary();
+	~Dictionary();
 
 	V searchByKey(const K &searchKey) const;
 	void addNewElement(const K &newKey, const V &newValue);
+	void deleteByKey(const K &deleteKey);
 
 	template<class KK, class VV>
 	friend std::ostream &operator<<(std::ostream &out, const Dictionary<KK, VV> &source);
@@ -218,6 +219,45 @@ inline void Dictionary<K, V>::addNewElement(const K & newKey, const V & newValue
 }
 
 template<class K, class V>
+inline void Dictionary<K, V>::deleteByKey(const K & deleteKey)
+{
+	bool check = false;
+	if (type_name<K>::get() == "string")
+	{
+		for (size_t i = 0; i < this->currentSize && !check; i++)
+		{
+			std::string tmpKey = this->keys[i], tmpDelKey = deleteKey;
+			if (tmpKey.compare(deleteKey) == 0)
+			{
+				for (size_t j = i; j < this->currentSize - 1; j++)
+				{
+					this->keys[j] = this->keys[j + 1];
+					this->values[j] = this->values[j + 1];
+				}
+				this->currentSize--;
+				check = true;
+			}
+		}
+	}
+	else
+	{
+		for (size_t i = 0; i < this->currentSize && !check; i++)
+		{
+			if (this->keys[i] == deleteByKey) // Отделил съм отделен случай за стринг, как да преодолея Грешка C2678 тогава.
+			{
+				for (size_t j = i; j < this->currentSize - 1; j++)
+				{
+					this->keys[j] = this->keys[j + 1];
+					this->values[j] = this->values[j + 1];
+				}
+				this->currentSize--;
+				check = true;
+			}
+		}
+	}
+}	
+
+template<class K, class V>
 std::ostream &operator<<(std::ostream &out, const Dictionary<K, V> &source)
 {
 	Dictionary<K, V> tmp(source);
@@ -229,3 +269,26 @@ std::ostream &operator<<(std::ostream &out, const Dictionary<K, V> &source)
 		
 	return out;
 }
+
+template<class T>
+class type_name {
+public:
+	static std::string get() { return typeid(T).name(); }
+};
+template<>
+class type_name<std::string> {
+public:
+	static std::string get() { return "string"; }
+};
+
+template<>
+class type_name<const char *> {
+public:
+	static std::string get() { return "string"; }
+};
+
+template<int N>
+class type_name<const char[N]> {
+public:
+	static std::string get() { return "string"; }
+};

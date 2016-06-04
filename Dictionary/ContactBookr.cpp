@@ -227,6 +227,10 @@ void ContactBook::deleteContactByName(std::string name)
 		{
 			this->moveToRight(i);
 			check = true;
+
+			this->contactsByID.deleteByKey(this->contacts[i].getID()); // ÄÀ ÑÅ ÌÀÕÀ ËÈ È ÒÓÊ
+			this->contactsByName.deleteByKey(this->contacts[i].getName());
+			this->contactsByTelNumber.deleteByKey(this->contacts[i].getTelNumber());
 		}
 	}
 }
@@ -240,6 +244,10 @@ void ContactBook::deleteContactByTelNumber(std::string telNumber)
 		{
 			this->moveToRight(i);
 			check = true;
+			
+			this->contactsByID.deleteByKey(this->contacts[i].getID()); // ÄÀ ÑÅ ÌÀÕÀ ËÈ È ÒÓÊ
+			this->contactsByName.deleteByKey(this->contacts[i].getName());
+			this->contactsByTelNumber.deleteByKey(this->contacts[i].getTelNumber());
 		}
 	}
 }
@@ -253,6 +261,10 @@ void ContactBook::deleteContactByID(std::string ID)
 		{
 			this->moveToRight(i);
 			check = true;
+
+			this->contactsByID.deleteByKey(this->contacts[i].getID()); // ÄÀ ÑÅ ÌÀÕÀ ËÈ È ÒÓÊ
+			this->contactsByName.deleteByKey(this->contacts[i].getName());
+			this->contactsByTelNumber.deleteByKey(this->contacts[i].getTelNumber());
 		}
 	}
 }
